@@ -1,0 +1,14 @@
+---
+# defaults file for nerd_blockchain_node
+nerd_blockchain_node_arch: amd64
+nerd_blockchain_node_company: hyper
+
+nerd_blockchain_node_secrets_dir: "{{ lookup('env', 'HOME') }}/.secrets"
+nerd_blockchain_node_secret_file: "{{ nerd_blockchain_node_secrets_dir }}/{{ nerd_blockchain_node_company }}.passwd"
+
+nerd_blockchain_node_url_prefix: "https://download.nerdunited.com/node-binaries"
+nerd_blockchain_node_user_id: ""
+nerd_blockchain_node_version: "v2.6.1-b"
+
+nerd_blockchain_node_file: "{{ nerd_blockchain_node_company }}-{{ nerd_blockchain_node_version }}_linux-{{  nerd_blockchain_node_arch }}"
+nerd_blockchain_node_url: "{{ nerd_blockchain_node_url_prefix }}/{{ nerd_blockchain_node_version }}/{{ nerd_blockchain_node_file }}"

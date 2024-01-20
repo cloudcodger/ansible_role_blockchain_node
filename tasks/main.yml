@@ -1,0 +1,29 @@
+---
+# tasks file for nerd_blockchain_node
+- name: Get the blockchain node software.
+  ansible.builtin.get_url:
+    url: "{{ nerd_blockchain_node_url }}"
+    dest: /usr/local/bin/{{ nerd_blockchain_node_company }}-node
+    # validate_certs: false
+    mode: "0755"
+
+- name: Config the node software.
+  ansible.builtin.shell: # noqa: command-instead-of-shell
+    cmd: /usr/local/bin/{{ nerd_blockchain_node_company }}-node config
+    creates: /root/.{{ nerd_blockchain_node_company }}-node
+  environment:
+    NODE_NAME: "{{ inventory_hostname }}"
+    NODE_PASSWORD: "{{ lookup('file', '{{ nerd_blockchain_node_secret_file }}') }}"
+    NODE_EMAIL: "{{ nerd_blockchain_node_user_id }}"
+
+- name: Create the blockchain node service.
+  ansible.builtin.template:
+    src: 'service.j2'
+    dest: "/etc/systemd/system/{{ nerd_blockchain_node_company }}.service"
+    mode: '0644'
+
+- name: Start the blockchain node service.
+  ansible.builtin.systemd:
+    name: "{{ nerd_blockchain_node_company }}"
+    enabled: true
+    state: started

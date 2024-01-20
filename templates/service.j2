@@ -1,0 +1,11 @@
+[Unit]
+Description={{ nerd_blockchain_node_company }} node
+After=network.target
+
+[Service]
+User=root
+ExecStart=/usr/local/bin/{{ nerd_blockchain_node_company }}-node
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
