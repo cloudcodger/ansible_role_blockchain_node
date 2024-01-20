@@ -8,9 +8,9 @@ This role can be installed using a `requirements` file and the following command
 `requirements.yml`
 ```yaml
 ---
-- roles
+roles:
     - name: nerd_blockchain_node
-      source: https://github.com/cloudcodger/ansible_nerd_blockchain_node
+      src: https://github.com/cloudcodger/ansible_nerd_blockchain_node
 ```
 
 ```bash
