@@ -9,8 +9,8 @@ This role can be installed using a `requirements` file and the following command
 ```yaml
 ---
 roles:
-    - name: nerd_blockchain_node
-      src: https://github.com/cloudcodger/ansible_nerd_blockchain_node
+  - name: nerd_blockchain_node
+    src: https://github.com/cloudcodger/ansible_nerd_blockchain_node
 ```
 
 ```bash
@@ -32,12 +32,19 @@ Either set these or make sure they are correct.
   (default `https://download.nerdunited.com/node-binaries` used for `hyper`).
 `nerd_blockchain_node_user_id`: The User ID to authenticate the node (NO default value).
 
+These have reasonable default values but can be changed when needed.
 `nerd_blockchain_node_arch`: The host architecture (default `amd64`).
 `nerd_blockchain_node_file`: The file name to download
   (the default is constructed from the company, version and arch values).
+`nerd_blockchain_node_reboot_on_failure`: When true, adds `FailureAction=reboot` to the service (default `true`).
+`nerd_blockchain_node_restart_sec`: Number of seconds between restarting the service (default `90`).
 `nerd_blockchain_node_secrets_dir`: The directory holding the password file (default `~/.secrets`).
 `nerd_blockchain_node_secret_file`: The full path to file inside the secrets directory holding the password
   (default is `"{{ nerd_blockchain_node_secrets_dir }}/{{ nerd_blockchain_node_company }}.passwd"` ).
+`nerd_blockchain_node_start_burst`: Number of times to restart the service within the limit interval
+  before setting the service to `failed` (default `10`).
+`nerd_blockchain_node_start_limit_interval`: The interval (in seconds) in which the burst restarts will cause the
+  the service to become `failed` (default `1000`).
 `nerd_blockchain_node_url`: The full URL of the binary file to download
   (the default is constructed from the url prefix, version and node file vaules).
 `nerd_blockchain_node_version`: The version of the node software to download (default `v2.6.1-b`).

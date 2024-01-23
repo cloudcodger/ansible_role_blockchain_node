@@ -1,11 +1,17 @@
 [Unit]
 Description={{ nerd_blockchain_node_company }} node
 After=network.target
+{% if nerd_blockchain_node_reboot_on_failure is defined %}
+FailureAction=reboot
+{% endif %}
+StartLimitBurst={{ nerd_blockchain_node_start_burst }}
+StartLimitIntervalSec={{ nerd_blockchain_node_start_limit_interval }}
 
 [Service]
 User=root
 ExecStart=/usr/local/bin/{{ nerd_blockchain_node_company }}-node
 Restart=always
+RestartSec={{ nerd_blockchain_node_restart_sec }}
 
 [Install]
 WantedBy=multi-user.target
