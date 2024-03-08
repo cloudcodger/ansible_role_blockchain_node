@@ -1,5 +1,9 @@
 # Change log
 
+# version 1.1.1
+
+- Changed 'FailureAction' to 'StartLimitAction'.
+
 # version 1.1.0
 
 - Added settings to change the restart behaviour of the service.

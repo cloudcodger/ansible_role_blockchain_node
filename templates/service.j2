@@ -2,7 +2,7 @@
 Description={{ nerd_blockchain_node_company }} node
 After=network.target
 {% if nerd_blockchain_node_reboot_on_failure is defined %}
-FailureAction=reboot
+StartLimitAction=reboot
 {% endif %}
 StartLimitBurst={{ nerd_blockchain_node_start_burst }}
 StartLimitIntervalSec={{ nerd_blockchain_node_start_limit_interval }}
