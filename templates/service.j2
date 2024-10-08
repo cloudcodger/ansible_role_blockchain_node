@@ -9,6 +9,7 @@ StartLimitIntervalSec={{ nerd_blockchain_node_start_limit_interval }}
 
 [Service]
 User=root
+Environment=NODE_LOG_LEVEL=INFO
 ExecStart=/usr/local/bin/{{ nerd_blockchain_node_company }}-node
 Restart=always
 RestartSec={{ nerd_blockchain_node_restart_sec }}
