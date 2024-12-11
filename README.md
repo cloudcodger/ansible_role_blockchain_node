@@ -1,7 +1,11 @@
 Role Name
 =========
 
-A role to download and install Blockchain Node software for Nerd United Brands.
+A role to download, install and run Blockchain Node software for Nerd United Brands.
+
+The node software can be downloaded from a provided URL or uploaded from the `files` directory next to the playbook calling this role. For large numbers of hosts, this can speed things up.
+
+The default values will run one (1) node on each host. There is a maximum or 750 nodes per host supported by this role, because each node is run under a unique user _service_ account and past a certain number you run into problems getting a UID or GID that isn't already taken by the system. This is a good limit to make sure you stay under that value.
 
 This role can be installed using a `requirements` file and the following command.
 
@@ -21,33 +25,31 @@ Requirements
 ------------
 
 A computer running a Linux system capable of running the software.
-A file under the `nerd_blockchain_node_secrets_dir` directory that contains the password for the blockchain node account.
 
 Role Variables
 --------------
 
-Either set these or make sure they are correct.
-`nerd_blockchain_node_company`: The company or brand for the blockchain (default `hyper`).
-`nerd_blockchain_node_url_prefix`: The URL prefix from which to download the binary
-  (default `https://download.nerdunited.com/node-binaries` used for `hyper`).
-`nerd_blockchain_node_user_id`: The User ID to authenticate the node (NO default value).
+**Required** to be set and have no default value.
+- `nerd_blockchain_node_company`: The company or brand for the blockchain.
+- `nerd_blockchain_node_email`: The User Email to authenticate the node.
+- `nerd_blockchain_node_password`: The User Password to authenticate the node.
+
+One of these two is **Required** to be set and have no default value. The `file` will be used if both are provided.
+- `nerd_blockchain_node_file`: The file name to download (must exist).
+- `nerd_blockchain_node_url`: The full URL of the binary file to download.
 
 These have reasonable default values but can be changed when needed.
-`nerd_blockchain_node_arch`: The host architecture (default `amd64`).
-`nerd_blockchain_node_file`: The file name to download
-  (the default is constructed from the company, version and arch values).
-`nerd_blockchain_node_reboot_on_failure`: When true, adds `FailureAction=reboot` to the service (default `true`).
-`nerd_blockchain_node_restart_sec`: Number of seconds between restarting the service (default `90`).
-`nerd_blockchain_node_secrets_dir`: The directory holding the password file (default `~/.secrets`).
-`nerd_blockchain_node_secret_file`: The full path to file inside the secrets directory holding the password
-  (default is `"{{ nerd_blockchain_node_secrets_dir }}/{{ nerd_blockchain_node_company }}.passwd"` ).
-`nerd_blockchain_node_start_burst`: Number of times to restart the service within the limit interval
+- `nerd_blockchain_node_config_pause`: The number of seconds to Pause between configuring nodes (default `8`).
+- `nerd_blockchain_node_count`: The number of nodes to run on the host (max value `750`).
+- `nerd_blockchain_node_cleanup`: Clean up or remove any nodes from `nerd_blockchain_node_count` to this value (default: `1`).
+- `nerd_blockchain_node_log_level`: The log level for the nodes (default `debug`).
+- `nerd_blockchain_node_reboot_on_failure`: When true, adds `FailureAction=reboot` to the service (default `true`).
+- `nerd_blockchain_node_restart_sec`: Number of seconds between restarting the service (default `90`).
+- `nerd_blockchain_node_start_burst`: Number of times to restart the service within the limit interval
   before setting the service to `failed` (default `10`).
-`nerd_blockchain_node_start_limit_interval`: The interval (in seconds) in which the burst restarts will cause the
+ - `nerd_blockchain_node_start_limit_interval`: The interval (in seconds) in which the burst restarts will cause the
   the service to become `failed` (default `1000`).
-`nerd_blockchain_node_url`: The full URL of the binary file to download
-  (the default is constructed from the url prefix, version and node file vaules).
-`nerd_blockchain_node_version`: The version of the node software to download (default `v2.6.1-b`).
+- `nerd_blockchain_node_user`: The Linux User prefix where the nodes will run (default `blockchain`).
 
 Dependencies
 ------------
@@ -61,15 +63,27 @@ This example is for a blockchain node for the Element brand.
 
 ```yaml
 ---
-- name: Configure a blockchain node for 'element' with ficticious email address.
+- name: Configure a blockchain node for 'hyper' with ficticious email address.
   become: true
-  hosts: element
+  hosts: hyper
 
   roles:
     - role: nerd_blockchain_node
-      nerd_blockchain_node_company: element
-      nerd_blockchain_node_url_prefix: "https://download.elementunited.com/node-binaries"
-      nerd_blockchain_node_user_id: node_runner@nerdunited.com
+      nerd_blockchain_node_company: hyper
+      nerd_blockchain_node_email: node_runner@nerdunited.com
+      nerd_blockchain_node_password: "{{ lookup('file', '~/.secrets/hyper.passwd') }}"
+      nerd_blockchain_node_url: "https://download.nerdunited.com/node-binaries/v2.6.5/hyper-v2.6.5_linux-amd64"
+
+- name: Configure a blockchain node for 'hyper' with ficticious email address, using a file.
+  become: true
+  hosts: hyper
+
+  roles:
+    - role: nerd_blockchain_node
+      nerd_blockchain_node_company: hyper
+      nerd_blockchain_node_email: node_runner@nerdunited.com
+      nerd_blockchain_node_file: "hyper-v2.6.5_linux-amd64"
+      nerd_blockchain_node_password: "{{ lookup('file', '~/.secrets/hyper.passwd') }}"
 ```
 
 Example LXC Container Setup
@@ -116,5 +130,8 @@ Assuming the use of Proxmox that has been configured to use the `cloudcodger.pro
   roles:
     - role: cloudcodger.ubuntu.initial_apt_update
     - role: nerd_blockchain_node
-      nerd_blockchain_node_user_id: node_runner@nerdunited.com
+      nerd_blockchain_node_company: hyper
+      nerd_blockchain_node_email: node_runner@nerdunited.com
+      nerd_blockchain_node_password: "{{ lookup('file', '~/.secrets/hyper.passwd') }}"
+      nerd_blockchain_node_url: "https://download.nerdunited.com/node-binaries/v2.6.5/hyper-v2.6.5_linux-amd64"
 ```
