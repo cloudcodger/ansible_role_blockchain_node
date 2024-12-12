@@ -45,6 +45,12 @@
     fail_msg: "Either a Firebase ID or an email and password must be provided."
     quiet: true
 
+- name: Install sudo.
+  ansible.builtin.apt:
+    name: sudo
+    cache_valid_time: 3600
+    state: present
+
 - name: Get the blockchain node software.
   ansible.builtin.get_url:
     url: "{{ nerd_blockchain_node_url }}"

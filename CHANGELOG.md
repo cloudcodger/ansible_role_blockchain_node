@@ -1,5 +1,9 @@
 # Change log
 
+# version 2.1.1
+
+- Added `sudo` because Debian doesn't include it like Ubuntu (where initial testing was done).
+
 # version 2.1.0
 
 - Added the ability to provide a Firebase ID instead of email and password for authentication.
