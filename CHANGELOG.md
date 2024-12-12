@@ -1,5 +1,9 @@
 # Change log
 
+# version 2.1.0
+
+- Added the ability to provide a Firebase ID instead of email and password for authentication.
+
 # version 2.0.0
 
 ## Breaking changes

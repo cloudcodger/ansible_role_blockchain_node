@@ -4,6 +4,7 @@ nerd_blockchain_node_company: ""
 nerd_blockchain_node_count: 1
 nerd_blockchain_node_email: ""
 nerd_blockchain_node_file: ""
+nerd_blockchain_node_firebase_id: ""
 nerd_blockchain_node_password: ""
 nerd_blockchain_node_url: ""
 

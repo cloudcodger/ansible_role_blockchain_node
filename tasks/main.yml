@@ -1,10 +1,12 @@
 ---
-- name: Make sure that company, email, and password were provided.
+- name: Make sure that the company was provided.
   ansible.builtin.assert:
-    that:
-      - nerd_blockchain_node_company | length > 1
-      - nerd_blockchain_node_email | length > 1
-      - nerd_blockchain_node_password | length > 1
+    that: nerd_blockchain_node_company | length > 1
+    quiet: true
+
+- name: Make sure nerd_blockchain_node_count is less than 751.
+  ansible.builtin.assert:
+    that: "{{ nerd_blockchain_node_count < 751 }}"
     quiet: true
 
 - name: Make sure that file was provided when not URL.
@@ -19,14 +21,28 @@
     quiet: true
   when: nerd_blockchain_node_file | length == 0
 
-# - name: Make sure that file or url was provided.
-#   ansible.builtin.assert:
-#     that: "{{ nerd_blockchain_node_file | length > 1 }} or {{ nerd_blockchain_node_url | length > 1 }}"
-#     quiet: true
+- name: Set config environment if email was provided.
+  ansible.builtin.set_fact:
+    node_config_env:
+      NODE_EMAIL: "{{ nerd_blockchain_node_email }}"
+      NODE_PASSWORD: "{{ nerd_blockchain_node_password }}"
+  when:
+    - nerd_blockchain_node_email | length > 1
+    - nerd_blockchain_node_password | length > 1
 
-- name: Make sure nerd_blockchain_node_count is less than 751.
+# If email, password, and firebase ID are all provided,
+# this will take precedence as it was set last.
+- name: Set config environment if Firebase ID was provided.
+  ansible.builtin.set_fact:
+    node_config_env:
+      NODE_USER_ID: "{{ nerd_blockchain_node_firebase_id }}"
+  when:
+    - nerd_blockchain_node_firebase_id | length > 1
+
+- name: Make sure the config environment got set.
   ansible.builtin.assert:
-    that: "{{ nerd_blockchain_node_count < 751 }}"
+    that: node_config_env is defined
+    fail_msg: "Either a Firebase ID or an email and password must be provided."
     quiet: true
 
 - name: Get the blockchain node software.
@@ -58,15 +74,12 @@
   with_sequence: start=1 end="{{ nerd_blockchain_node_count }}" format='%03d'
 
 - name: Config the node software.
-  ansible.builtin.shell: # noqa: command-instead-of-shell
+  ansible.builtin.command:
     cmd: /usr/local/bin/{{ nerd_blockchain_node_company }}-node config
     creates: /home/{{ nerd_blockchain_node_user }}{{ item }}/.{{ nerd_blockchain_node_company }}-node
   become: yes
   become_user: "{{ nerd_blockchain_node_user }}{{ item }}"
-  environment:
-    NODE_NAME: "{{ inventory_hostname }}{{ item }}"
-    NODE_PASSWORD: "{{ nerd_blockchain_node_password }}"
-    NODE_EMAIL: "{{ nerd_blockchain_node_email }}"
+  environment: "{{ {'NODE_NAME': inventory_hostname + item} | combine(node_config_env) }}"
   loop_control:
     pause: "{{ nerd_blockchain_node_config_pause }}"
   with_sequence: start=1 end="{{ nerd_blockchain_node_count }}" format='%03d'

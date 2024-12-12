@@ -29,9 +29,10 @@ A computer running a Linux system capable of running the software.
 Role Variables
 --------------
 
-**Required** to be set and have no default value.
+These are **required** to be set and have no default value. Either a Firebase ID or both email and password. If all three are provided, the Firebase ID will be used to configure the node, overriding the email and password.
 - `nerd_blockchain_node_company`: The company or brand for the blockchain.
 - `nerd_blockchain_node_email`: The User Email to authenticate the node.
+- `nerd_blockchain_node_firebase_id`: The Firebase ID for the User.
 - `nerd_blockchain_node_password`: The User Password to authenticate the node.
 
 One of these two is **Required** to be set and have no default value. The `file` will be used if both are provided.
