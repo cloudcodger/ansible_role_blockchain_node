@@ -1,5 +1,9 @@
 # Change log
 
+# version 3.0.0
+
+- Renamed the role to `blockchain_node`.
+
 # version 2.1.1
 
 - Added `sudo` because Debian doesn't include it like Ubuntu (where initial testing was done).
