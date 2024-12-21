@@ -2,7 +2,9 @@
 
 # version 3.0.0
 
+## Breaking changes
 - Renamed the role to `blockchain_node`.
+- Also means the prefix for all variable names changed.
 
 # version 2.1.1
 

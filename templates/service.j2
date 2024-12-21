@@ -1,19 +1,19 @@
 [Unit]
-Description={{ nerd_blockchain_node_company }} node {{ item }}
+Description={{ blockchain_node_company }} node {{ item }}
 After=network.target
-{% if nerd_blockchain_node_reboot_on_failure is defined %}
+{% if blockchain_node_reboot_on_failure is defined %}
 StartLimitAction=reboot
 {% endif %}
-StartLimitBurst={{ nerd_blockchain_node_start_burst }}
-StartLimitIntervalSec={{ nerd_blockchain_node_start_limit_interval }}
+StartLimitBurst={{ blockchain_node_start_burst }}
+StartLimitIntervalSec={{ blockchain_node_start_limit_interval }}
 
 [Service]
-User={{ nerd_blockchain_node_user }}{{ item }}
-Group={{ nerd_blockchain_node_user }}{{ item }}
-Environment=NODE_LOG_LEVEL={{ nerd_blockchain_node_log_level }}
-ExecStart=/usr/local/bin/{{ nerd_blockchain_node_company }}-node
+User={{ blockchain_node_user }}{{ item }}
+Group={{ blockchain_node_user }}{{ item }}
+Environment=NODE_LOG_LEVEL={{ blockchain_node_log_level }}
+ExecStart=/usr/local/bin/{{ blockchain_node_company }}-node
 Restart=always
-RestartSec={{ nerd_blockchain_node_restart_sec }}
+RestartSec={{ blockchain_node_restart_sec }}
 
 [Install]
 WantedBy=multi-user.target

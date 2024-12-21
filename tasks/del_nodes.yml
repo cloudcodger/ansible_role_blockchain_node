@@ -1,24 +1,24 @@
 ---
 - name: Stop the blockchain node service.
   ansible.builtin.systemd_service:
-    name: "{{ nerd_blockchain_node_company }}{{ item }}"
+    name: "{{ blockchain_node_company }}{{ item }}"
     daemon_reload: true
     state: stopped
   register: blockchain_node_stop_service
   failed_when:
     - blockchain_node_stop_service.failed == true
     - '"Could not find the requested service" not in blockchain_node_stop_service.msg'
-  with_sequence: start={{ nerd_blockchain_node_count + 1 }} end={{ nerd_blockchain_node_cleanup }} format='%03d'
+  with_sequence: start={{ blockchain_node_count + 1 }} end={{ blockchain_node_cleanup }} format='%03d'
 
 - name: Remove the blockchain node service.
   ansible.builtin.file:
-    path: "/etc/systemd/system/{{ nerd_blockchain_node_company }}{{ item }}.service"
+    path: "/etc/systemd/system/{{ blockchain_node_company }}{{ item }}.service"
     state: absent
-  with_sequence: start={{ nerd_blockchain_node_count + 1 }} end={{ nerd_blockchain_node_cleanup }} format='%03d'
+  with_sequence: start={{ blockchain_node_count + 1 }} end={{ blockchain_node_cleanup }} format='%03d'
 
 - name: Remove user accounts.
   ansible.builtin.user:
-    name: "{{ nerd_blockchain_node_user }}{{ item }}"
+    name: "{{ blockchain_node_user }}{{ item }}"
     remove: true
     state: absent
-  with_sequence: start={{ nerd_blockchain_node_count + 1 }} end={{ nerd_blockchain_node_cleanup }} format='%03d'
+  with_sequence: start={{ blockchain_node_count + 1 }} end={{ blockchain_node_cleanup }} format='%03d'

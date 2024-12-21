@@ -1,43 +1,43 @@
 ---
 - name: Make sure that the company was provided.
   ansible.builtin.assert:
-    that: nerd_blockchain_node_company | length > 1
+    that: blockchain_node_company | length > 1
     quiet: true
 
-- name: Make sure nerd_blockchain_node_count is less than 751.
+- name: Make sure blockchain_node_count is less than 751.
   ansible.builtin.assert:
-    that: "{{ nerd_blockchain_node_count < 751 }}"
+    that: "{{ blockchain_node_count < 751 }}"
     quiet: true
 
 - name: Make sure that file was provided when not URL.
   ansible.builtin.assert:
-    that: "{{ nerd_blockchain_node_file | length > 1 }}"
+    that: "{{ blockchain_node_file | length > 1 }}"
     quiet: true
-  when: nerd_blockchain_node_url | length == 0
+  when: blockchain_node_url | length == 0
 
 - name: Make sure that URL was provided when not file.
   ansible.builtin.assert:
-    that: "{{ nerd_blockchain_node_url | length > 1 }}"
+    that: "{{ blockchain_node_url | length > 1 }}"
     quiet: true
-  when: nerd_blockchain_node_file | length == 0
+  when: blockchain_node_file | length == 0
 
 - name: Set config environment if email was provided.
   ansible.builtin.set_fact:
     node_config_env:
-      NODE_EMAIL: "{{ nerd_blockchain_node_email }}"
-      NODE_PASSWORD: "{{ nerd_blockchain_node_password }}"
+      NODE_EMAIL: "{{ blockchain_node_email }}"
+      NODE_PASSWORD: "{{ blockchain_node_password }}"
   when:
-    - nerd_blockchain_node_email | length > 1
-    - nerd_blockchain_node_password | length > 1
+    - blockchain_node_email | length > 1
+    - blockchain_node_password | length > 1
 
 # If email, password, and firebase ID are all provided,
 # this will take precedence as it was set last.
 - name: Set config environment if Firebase ID was provided.
   ansible.builtin.set_fact:
     node_config_env:
-      NODE_USER_ID: "{{ nerd_blockchain_node_firebase_id }}"
+      NODE_USER_ID: "{{ blockchain_node_firebase_id }}"
   when:
-    - nerd_blockchain_node_firebase_id | length > 1
+    - blockchain_node_firebase_id | length > 1
 
 - name: Make sure the config environment got set.
   ansible.builtin.assert:
@@ -53,59 +53,59 @@
 
 - name: Get the blockchain node software.
   ansible.builtin.get_url:
-    url: "{{ nerd_blockchain_node_url }}"
-    dest: /usr/local/bin/{{ nerd_blockchain_node_company }}-node
+    url: "{{ blockchain_node_url }}"
+    dest: /usr/local/bin/{{ blockchain_node_company }}-node
     # validate_certs: false
     mode: "0755"
   when:
-    - nerd_blockchain_node_url | length > 1
-    - nerd_blockchain_node_file | length == 0
+    - blockchain_node_url | length > 1
+    - blockchain_node_file | length == 0
 
 - name: Copy up the node software.
   ansible.builtin.copy:
-    dest: /usr/local/bin/{{ nerd_blockchain_node_company }}-node
-    src: "{{ nerd_blockchain_node_file }}"
+    dest: /usr/local/bin/{{ blockchain_node_company }}-node
+    src: "{{ blockchain_node_file }}"
     mode: "0755"
-  when: nerd_blockchain_node_file | length > 1
+  when: blockchain_node_file | length > 1
 
 # Create node accounts and services
 
 - name: Create the user account to run the node software.
   ansible.builtin.user:
-    name: "{{ nerd_blockchain_node_user }}{{ item }}"
-    comment: "{{ nerd_blockchain_node_email }} Blockchain Node User {{ item }}"
+    name: "{{ blockchain_node_user }}{{ item }}"
+    comment: "{{ blockchain_node_email }} Blockchain Node User {{ item }}"
     shell: /bin/bash
     system: true
     create_home: true
-  with_sequence: start=1 end="{{ nerd_blockchain_node_count }}" format='%03d'
+  with_sequence: start=1 end="{{ blockchain_node_count }}" format='%03d'
 
 - name: Config the node software.
   ansible.builtin.command:
-    cmd: /usr/local/bin/{{ nerd_blockchain_node_company }}-node config
-    creates: /home/{{ nerd_blockchain_node_user }}{{ item }}/.{{ nerd_blockchain_node_company }}-node
+    cmd: /usr/local/bin/{{ blockchain_node_company }}-node config
+    creates: /home/{{ blockchain_node_user }}{{ item }}/.{{ blockchain_node_company }}-node
   become: yes
-  become_user: "{{ nerd_blockchain_node_user }}{{ item }}"
+  become_user: "{{ blockchain_node_user }}{{ item }}"
   environment: "{{ {'NODE_NAME': inventory_hostname + item} | combine(node_config_env) }}"
   loop_control:
-    pause: "{{ nerd_blockchain_node_config_pause }}"
-  with_sequence: start=1 end="{{ nerd_blockchain_node_count }}" format='%03d'
+    pause: "{{ blockchain_node_config_pause }}"
+  with_sequence: start=1 end="{{ blockchain_node_count }}" format='%03d'
 
 - name: Create the blockchain node service.
   ansible.builtin.template:
     src: 'service.j2'
-    dest: "/etc/systemd/system/{{ nerd_blockchain_node_company }}{{ item }}.service"
+    dest: "/etc/systemd/system/{{ blockchain_node_company }}{{ item }}.service"
     mode: '0644'
-  with_sequence: start=1 end="{{ nerd_blockchain_node_count }}" format='%03d'
+  with_sequence: start=1 end="{{ blockchain_node_count }}" format='%03d'
 
 - name: Start the blockchain node service.
   ansible.builtin.systemd_service:
-    name: "{{ nerd_blockchain_node_company }}{{ item }}"
+    name: "{{ blockchain_node_company }}{{ item }}"
     daemon_reload: true
     enabled: true
     state: started
-  with_sequence: start=1 end="{{ nerd_blockchain_node_count }}" format='%03d'
+  with_sequence: start=1 end="{{ blockchain_node_count }}" format='%03d'
 
 # Using an include here, because the with_sequence gets tried even if the when is false and errors out
 - name: Include the del_node tasks.
   ansible.builtin.include_tasks: 'del_nodes.yml'
-  when: nerd_blockchain_node_count < nerd_blockchain_node_cleanup
+  when: blockchain_node_count < blockchain_node_cleanup

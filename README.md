@@ -13,8 +13,8 @@ This role can be installed using a `requirements` file and the following command
 ```yaml
 ---
 roles:
-  - name: nerd_blockchain_node
-    src: https://github.com/cloudcodger/ansible_nerd_blockchain_node
+  - name: blockchain_node
+    src: https://github.com/cloudcodger/ansible_blockchain_node
 ```
 
 ```bash
@@ -30,27 +30,27 @@ Role Variables
 --------------
 
 These are **required** to be set and have no default value. Either a Firebase ID or both email and password. If all three are provided, the Firebase ID will be used to configure the node, overriding the email and password.
-- `nerd_blockchain_node_company`: The company or brand for the blockchain.
-- `nerd_blockchain_node_email`: The User Email to authenticate the node.
-- `nerd_blockchain_node_firebase_id`: The Firebase ID for the User.
-- `nerd_blockchain_node_password`: The User Password to authenticate the node.
+- `blockchain_node_company`: The company or brand for the blockchain.
+- `blockchain_node_email`: The User Email to authenticate the node.
+- `blockchain_node_firebase_id`: The Firebase ID for the User.
+- `blockchain_node_password`: The User Password to authenticate the node.
 
 One of these two is **Required** to be set and have no default value. The `file` will be used if both are provided.
-- `nerd_blockchain_node_file`: The file name to download (must exist).
-- `nerd_blockchain_node_url`: The full URL of the binary file to download.
+- `blockchain_node_file`: The file name to download (must exist).
+- `blockchain_node_url`: The full URL of the binary file to download.
 
 These have reasonable default values but can be changed when needed.
-- `nerd_blockchain_node_config_pause`: The number of seconds to Pause between configuring nodes (default `8`).
-- `nerd_blockchain_node_count`: The number of nodes to run on the host (max value `750`).
-- `nerd_blockchain_node_cleanup`: Clean up or remove any nodes from `nerd_blockchain_node_count` to this value (default: `1`).
-- `nerd_blockchain_node_log_level`: The log level for the nodes (default `debug`).
-- `nerd_blockchain_node_reboot_on_failure`: When true, adds `FailureAction=reboot` to the service (default `true`).
-- `nerd_blockchain_node_restart_sec`: Number of seconds between restarting the service (default `90`).
-- `nerd_blockchain_node_start_burst`: Number of times to restart the service within the limit interval
+- `blockchain_node_config_pause`: The number of seconds to Pause between configuring nodes (default `8`).
+- `blockchain_node_count`: The number of nodes to run on the host (max value `750`).
+- `blockchain_node_cleanup`: Clean up or remove any nodes from `blockchain_node_count` to this value (default: `1`).
+- `blockchain_node_log_level`: The log level for the nodes (default `debug`).
+- `blockchain_node_reboot_on_failure`: When true, adds `FailureAction=reboot` to the service (default `true`).
+- `blockchain_node_restart_sec`: Number of seconds between restarting the service (default `90`).
+- `blockchain_node_start_burst`: Number of times to restart the service within the limit interval
   before setting the service to `failed` (default `10`).
- - `nerd_blockchain_node_start_limit_interval`: The interval (in seconds) in which the burst restarts will cause the
+ - `blockchain_node_start_limit_interval`: The interval (in seconds) in which the burst restarts will cause the
   the service to become `failed` (default `1000`).
-- `nerd_blockchain_node_user`: The Linux User prefix where the nodes will run (default `blockchain`).
+- `blockchain_node_user`: The Linux User prefix where the nodes will run (default `blockchain`).
 
 Dependencies
 ------------
@@ -69,22 +69,22 @@ This example is for a blockchain node for the Element brand.
   hosts: hyper
 
   roles:
-    - role: nerd_blockchain_node
-      nerd_blockchain_node_company: hyper
-      nerd_blockchain_node_email: node_runner@nerdunited.com
-      nerd_blockchain_node_password: "{{ lookup('file', '~/.secrets/hyper.passwd') }}"
-      nerd_blockchain_node_url: "https://download.nerdunited.com/node-binaries/v2.6.5/hyper-v2.6.5_linux-amd64"
+    - role: blockchain_node
+      blockchain_node_company: hyper
+      blockchain_node_email: node_runner@nerdunited.com
+      blockchain_node_password: "{{ lookup('file', '~/.secrets/hyper.passwd') }}"
+      blockchain_node_url: "https://download.nerdunited.com/node-binaries/v2.6.5/hyper-v2.6.5_linux-amd64"
 
 - name: Configure a blockchain node for 'hyper' with ficticious email address, using a file.
   become: true
   hosts: hyper
 
   roles:
-    - role: nerd_blockchain_node
-      nerd_blockchain_node_company: hyper
-      nerd_blockchain_node_email: node_runner@nerdunited.com
-      nerd_blockchain_node_file: "hyper-v2.6.5_linux-amd64"
-      nerd_blockchain_node_password: "{{ lookup('file', '~/.secrets/hyper.passwd') }}"
+    - role: blockchain_node
+      blockchain_node_company: hyper
+      blockchain_node_email: node_runner@nerdunited.com
+      blockchain_node_file: "hyper-v2.6.5_linux-amd64"
+      blockchain_node_password: "{{ lookup('file', '~/.secrets/hyper.passwd') }}"
 ```
 
 Example LXC Container Setup
@@ -130,9 +130,9 @@ Assuming the use of Proxmox that has been configured to use the `cloudcodger.pro
 
   roles:
     - role: cloudcodger.ubuntu.initial_apt_update
-    - role: nerd_blockchain_node
-      nerd_blockchain_node_company: hyper
-      nerd_blockchain_node_email: node_runner@nerdunited.com
-      nerd_blockchain_node_password: "{{ lookup('file', '~/.secrets/hyper.passwd') }}"
-      nerd_blockchain_node_url: "https://download.nerdunited.com/node-binaries/v2.6.5/hyper-v2.6.5_linux-amd64"
+    - role: blockchain_node
+      blockchain_node_company: hyper
+      blockchain_node_email: node_runner@nerdunited.com
+      blockchain_node_password: "{{ lookup('file', '~/.secrets/hyper.passwd') }}"
+      blockchain_node_url: "https://download.nerdunited.com/node-binaries/v2.6.5/hyper-v2.6.5_linux-amd64"
 ```
