@@ -30,27 +30,63 @@ Role Variables
 --------------
 
 These are **required** to be set and have no default value. Either a Firebase ID or both email and password. If all three are provided, the Firebase ID will be used to configure the node, overriding the email and password.
-- `blockchain_node_company`: The company or brand for the blockchain.
-- `blockchain_node_email`: The User Email to authenticate the node.
-- `blockchain_node_firebase_id`: The Firebase ID for the User.
-- `blockchain_node_password`: The User Password to authenticate the node.
 
-One of these two is **Required** to be set and have no default value. The `file` will be used if both are provided.
-- `blockchain_node_file`: The file name to download (must exist).
-- `blockchain_node_url`: The full URL of the binary file to download.
+- `blockchain_node_company`
+  - The company or brand for the blockchain.
+- `blockchain_node_email`
+  - The User Email to authenticate the node.
+- `blockchain_node_firebase_id`
+  - The Firebase ID for the User.
+- `blockchain_node_password`
+  - The User Password to authenticate the node.
+
+One of these two is **Required** to be set and have no default value. The `blockchain_node_file` will be used if both are provided.
+
+- `blockchain_node_file`
+  - The file name to install on each host (must exist).
+- `blockchain_node_url`
+  - The full URL of the binary file to install on each host.
 
 These have reasonable default values but can be changed when needed.
-- `blockchain_node_config_pause`: The number of seconds to Pause between configuring nodes (default `8`).
-- `blockchain_node_count`: The number of nodes to run on the host (max value `750`).
-- `blockchain_node_cleanup`: Clean up or remove any nodes from `blockchain_node_count` to this value (default: `1`).
-- `blockchain_node_log_level`: The log level for the nodes (default `debug`).
-- `blockchain_node_reboot_on_failure`: When true, adds `FailureAction=reboot` to the service (default `true`).
-- `blockchain_node_restart_sec`: Number of seconds between restarting the service (default `90`).
-- `blockchain_node_start_burst`: Number of times to restart the service within the limit interval
-  before setting the service to `failed` (default `10`).
- - `blockchain_node_start_limit_interval`: The interval (in seconds) in which the burst restarts will cause the
-  the service to become `failed` (default `1000`).
-- `blockchain_node_user`: The Linux User prefix where the nodes will run (default `blockchain`).
+
+- `blockchain_node_bypass_start`
+  - Set to `true` in order to bypass the enable and start of the services.
+  - Default: `false`.
+- `blockchain_node_config_pause`
+  - The number of seconds to Pause between configuring nodes.
+  - Default: `8`.
+- `blockchain_node_count`
+  - The number of nodes to run on the host.
+  - Default: `1`.
+  - Max value: `750`.
+- `blockchain_node_cleanup`
+  - Clean up or remove any nodes from `blockchain_node_count` to this value.
+  - Default: `1`.
+- `blockchain_node_local_keys_dir`
+  - The directory on the control host (`localhost`) to contain config key files.
+  - This directory should not be included in source control repositories.
+  - Default: `files/keys`.
+- `blockchain_node_name`
+  - The name used for the binary and the "dot" file in the home directories.
+  - Default: `"{{ blockchain_node_company }}-node"`.
+- `blockchain_node_service_log_level`
+  - The log level for the nodes.
+  - Default `debug`.
+- `blockchain_node_service_reboot_on_failure`
+  - When true, adds `FailureAction=reboot` to the service.
+  - Default `true`.
+- `blockchain_node_service_restart_sec`
+  - Number of seconds between restarting the service.
+  - Default `90`.
+- `blockchain_node_service_start_burst`
+  - Number of times to restart the service within the limit interval before setting the service to `failed`.
+  - Default `10`.
+ - `blockchain_node_service_start_limit_interval`
+  - The interval (in seconds) in which the burst restarts will cause the the service to become `failed`.
+  - Default `1000`.
+- `blockchain_node_user`
+  - The Linux User prefix where the nodes will run.
+  - Default `blockchain`.
 
 Dependencies
 ------------

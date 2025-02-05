@@ -1,0 +1,65 @@
+---
+- name: Create the node software user account {{ blockchain_node_user }}{{ '%03d' | format(node_num) }}.
+  ansible.builtin.user:
+    name: "{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}"
+    comment: "{{ blockchain_node_email }} Blockchain Node User {{ '%03d' | format(node_num) }}"
+    shell: /bin/bash
+    system: true
+    create_home: true
+
+- name: Check for a local existing config (or key) file.
+  ansible.builtin.stat:
+    path: "{{ blockchain_node_local_keys_dir }}/{{ inventory_hostname }}/{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}/.{{ blockchain_node_name }}"
+  delegate_to: localhost
+  register: local_key_file
+
+- name: Upload local config file to host.
+  ansible.builtin.copy:
+    src: "{{ blockchain_node_local_keys_dir }}/{{ inventory_hostname }}/{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}/.{{ blockchain_node_name }}"
+    dest: "/home/{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}/.{{ blockchain_node_name }}"
+    owner: "{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}"
+    group: "{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}"
+    mode: "0600"
+  when: local_key_file.stat.exists
+
+- name: Config the node software.
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/{{ blockchain_node_name }} config"
+    creates: "/home/{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}/.{{ blockchain_node_name }}"
+  become: true
+  become_user: "{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}"
+  environment: "{{ {'NODE_NAME': inventory_hostname + ('%03d' | format(node_num))} | combine(node_config_env) }}"
+
+- name: Create the blockchain node service.
+  ansible.builtin.template:
+    src: 'service.j2'
+    dest: "/etc/systemd/system/{{ blockchain_node_company }}{{ '%03d' | format(node_num) }}.service"
+    mode: '0644'
+
+- name: Start the blockchain node service.
+  ansible.builtin.systemd_service:
+    name: "{{ blockchain_node_company }}{{ '%03d' | format(node_num) }}"
+    daemon_reload: true
+    enabled: true
+    state: started
+  when: not blockchain_node_bypass_start
+
+- name: Create the directory for the local config key files.
+  ansible.builtin.file:
+    path: "{{ blockchain_node_local_keys_dir }}/{{ inventory_hostname }}/{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}"
+    state: directory
+    mode: "0755"
+  delegate_to: localhost
+  when: blockchain_node_save_keys
+
+- name: Fetch the latest Key File.
+  ansible.builtin.fetch:
+    src: "/home/blockchain{{ '%03d' | format(node_num) }}/.{{ blockchain_node_name }}"
+    dest: "{{ blockchain_node_local_keys_dir }}/{{ inventory_hostname }}/{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}/.{{ blockchain_node_name }}"
+    mode: "0600"
+    flat: true
+  when: blockchain_node_save_keys
+
+- name: Pause between node configurations.
+  ansible.builtin.pause:
+    seconds: "{{ blockchain_node_config_pause }}"

@@ -1,19 +1,19 @@
 [Unit]
-Description={{ blockchain_node_company }} node {{ item }}
+Description={{ blockchain_node_company }} node {{ '%03d' | format(node_num) }}
 After=network.target
-{% if blockchain_node_reboot_on_failure is defined %}
+{% if blockchain_node_service_reboot_on_failure is true %}
 StartLimitAction=reboot
 {% endif %}
-StartLimitBurst={{ blockchain_node_start_burst }}
-StartLimitIntervalSec={{ blockchain_node_start_limit_interval }}
+StartLimitBurst={{ blockchain_node_service_start_burst }}
+StartLimitIntervalSec={{ blockchain_node_service_start_limit_interval }}
 
 [Service]
-User={{ blockchain_node_user }}{{ item }}
-Group={{ blockchain_node_user }}{{ item }}
-Environment=NODE_LOG_LEVEL={{ blockchain_node_log_level }}
-ExecStart=/usr/local/bin/{{ blockchain_node_company }}-node
+User={{ blockchain_node_user }}{{ '%03d' | format(node_num) }}
+Group={{ blockchain_node_user }}{{ '%03d' | format(node_num) }}
+Environment=NODE_LOG_LEVEL={{ blockchain_node_service_log_level }}
+ExecStart=/usr/local/bin/{{ blockchain_node_name }}
 Restart=always
-RestartSec={{ blockchain_node_restart_sec }}
+RestartSec={{ blockchain_node_service_restart_sec }}
 
 [Install]
 WantedBy=multi-user.target

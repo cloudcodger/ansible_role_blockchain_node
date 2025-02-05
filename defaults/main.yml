@@ -7,11 +7,15 @@ blockchain_node_firebase_id: ""
 blockchain_node_password: ""
 blockchain_node_url: ""
 
+blockchain_node_bypass_start: false
 blockchain_node_config_pause: 8
 blockchain_node_cleanup: 1
-blockchain_node_log_level: debug
-blockchain_node_reboot_on_failure: true
-blockchain_node_restart_sec: 90
-blockchain_node_start_burst: 10
-blockchain_node_start_limit_interval: 1000
+blockchain_node_local_keys_dir: files/keys
+blockchain_node_name: "{{ blockchain_node_company }}-node"
+blockchain_node_save_keys: true
+blockchain_node_service_log_level: debug
+blockchain_node_service_reboot_on_failure: true
+blockchain_node_service_restart_sec: 90
+blockchain_node_service_start_burst: 10
+blockchain_node_service_start_limit_interval: 1000
 blockchain_node_user: blockchain

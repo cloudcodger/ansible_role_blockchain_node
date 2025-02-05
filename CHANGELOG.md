@@ -1,5 +1,19 @@
 # Change log
 
+# version 4.0.0
+
+## Breaking changes
+- Renamed `service` related variables.
+
+## Other changes
+- Update to check if a configuration `key` file exists, and upload it.
+- Download all the configuration `key` files.
+  - Can be disabled with `blockchain_node_save_keys: false`.
+- Added a variable to bypass starting the node services.
+- Added a variable to change the name of the binary and (dot) files.
+  - For instances where the brand name is used instead of the name of the blockchain.
+- Created `add_nodes.yml` task file to change the order of task execution.
+
 # version 3.0.0
 
 ## Breaking changes
