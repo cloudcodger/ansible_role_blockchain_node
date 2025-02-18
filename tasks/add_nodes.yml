@@ -1,5 +1,5 @@
 ---
-- name: Create the node software user account {{ blockchain_node_user }}{{ '%03d' | format(node_num) }}.
+- name: Create the node software user account .......... {{ blockchain_node_user }}{{ '%03d' | format(node_num) }}.
   ansible.builtin.user:
     name: "{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}"
     comment: "{{ blockchain_node_email }} Blockchain Node User {{ '%03d' | format(node_num) }}"
@@ -29,6 +29,7 @@
   become: true
   become_user: "{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}"
   environment: "{{ {'NODE_NAME': inventory_hostname + ('%03d' | format(node_num))} | combine(node_config_env) }}"
+  register: node_configure
 
 - name: Create the blockchain node service.
   ansible.builtin.template:
@@ -50,7 +51,9 @@
     state: directory
     mode: "0755"
   delegate_to: localhost
-  when: blockchain_node_save_keys
+  when:
+    - blockchain_node_save_keys
+    - not local_key_file.stat.exists
 
 - name: Fetch the latest Key File.
   ansible.builtin.fetch:
@@ -58,8 +61,11 @@
     dest: "{{ blockchain_node_local_keys_dir }}/{{ inventory_hostname }}/{{ blockchain_node_user }}{{ '%03d' | format(node_num) }}/.{{ blockchain_node_name }}"
     mode: "0600"
     flat: true
-  when: blockchain_node_save_keys
+  when:
+    - blockchain_node_save_keys
+    - not local_key_file.stat.exists
 
 - name: Pause between node configurations.
   ansible.builtin.pause:
     seconds: "{{ blockchain_node_config_pause }}"
+  when: node_configure.changed

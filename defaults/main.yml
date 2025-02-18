@@ -1,6 +1,6 @@
 ---
 blockchain_node_company: ""
-blockchain_node_count: 1
+blockchain_node_last: 1
 blockchain_node_email: ""
 blockchain_node_file: ""
 blockchain_node_firebase_id: ""
@@ -8,8 +8,10 @@ blockchain_node_password: ""
 blockchain_node_url: ""
 
 blockchain_node_bypass_start: false
+blockchain_node_bypass_start: false
 blockchain_node_config_pause: 8
 blockchain_node_cleanup: 1
+blockchain_node_first: 1
 blockchain_node_local_keys_dir: files/keys
 blockchain_node_name: "{{ blockchain_node_company }}-node"
 blockchain_node_save_keys: true

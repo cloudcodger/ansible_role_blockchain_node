@@ -1,5 +1,5 @@
-Role Name
-=========
+Role `blockchain_node`
+======================
 
 A role to download, install and run Blockchain Node software for Nerd United Brands.
 
@@ -40,6 +40,21 @@ These are **required** to be set and have no default value. Either a Firebase ID
 - `blockchain_node_password`
   - The User Password to authenticate the node.
 
+- `blockchain_node_company`
+  - The company or brand for the blockchain.
+- `blockchain_node_email`
+  - The User Email to authenticate the node.
+- `blockchain_node_firebase_id`
+  - The Firebase ID for the User.
+- `blockchain_node_password`
+  - The User Password to authenticate the node.
+
+One of these two is **Required** to be set and have no default value. The `blockchain_node_file` will be used if both are provided.
+
+- `blockchain_node_file`
+  - The file name to install on each host (must exist).
+- `blockchain_node_url`
+  - The full URL of the binary file to install on each host.
 One of these two is **Required** to be set and have no default value. The `blockchain_node_file` will be used if both are provided.
 
 - `blockchain_node_file`
@@ -55,13 +70,16 @@ These have reasonable default values but can be changed when needed.
 - `blockchain_node_config_pause`
   - The number of seconds to Pause between configuring nodes.
   - Default: `8`.
-- `blockchain_node_count`
-  - The number of nodes to run on the host.
+- `blockchain_node_cleanup`
+  - Clean up or remove any nodes from `blockchain_node_last` to this value.
+  - Default: `1`.
+- `blockchain_node_first`
+  - The number of the first node to configure on the host.
+  - Default: `1`.
+- `blockchain_node_last`
+  - The number of the last node to configure on the host.
   - Default: `1`.
   - Max value: `750`.
-- `blockchain_node_cleanup`
-  - Clean up or remove any nodes from `blockchain_node_count` to this value.
-  - Default: `1`.
 - `blockchain_node_local_keys_dir`
   - The directory on the control host (`localhost`) to contain config key files.
   - This directory should not be included in source control repositories.

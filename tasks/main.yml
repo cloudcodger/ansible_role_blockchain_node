@@ -4,9 +4,9 @@
     that: blockchain_node_company | length > 1
     quiet: true
 
-- name: Make sure blockchain_node_count is less than 751.
+- name: Make sure blockchain_node_last is less than 751.
   ansible.builtin.assert:
-    that: "{{ blockchain_node_count < 751 }}"
+    that: "{{ blockchain_node_last < 751 }}"
     quiet: true
 
 - name: Make sure that file was provided when not URL.
@@ -55,6 +55,7 @@
   ansible.builtin.get_url:
     url: "{{ blockchain_node_url }}"
     dest: /usr/local/bin/{{ blockchain_node_name }}
+    dest: /usr/local/bin/{{ blockchain_node_name }}
     # validate_certs: false
     mode: "0755"
   when:
@@ -63,6 +64,7 @@
 
 - name: Copy up the node software.
   ansible.builtin.copy:
+    dest: /usr/local/bin/{{ blockchain_node_name }}
     dest: /usr/local/bin/{{ blockchain_node_name }}
     src: "{{ blockchain_node_file }}"
     mode: "0755"
@@ -78,13 +80,18 @@
 # Using an include here, because the with_sequence gets tried even if the when is false and errors out
 - name: Include the add_node tasks.
   ansible.builtin.include_tasks: 'add_nodes.yml'
-  # with_sequence: start=1 end="{{ blockchain_node_count }}" format='%03d'
-  loop: "{{ range(1, blockchain_node_count + 1) }}"
+  loop: "{{ range(blockchain_node_first, blockchain_node_last + 1) }}"
   loop_control:
+    loop_var: node_num
+    label: "{{ '%03d' | format(node_num) }}"
     loop_var: node_num
     label: "{{ '%03d' | format(node_num) }}"
 
 # Using an include here, because the with_sequence gets tried even if the when is false and errors out
 - name: Include the del_node tasks.
   ansible.builtin.include_tasks: 'del_nodes.yml'
-  when: blockchain_node_count < blockchain_node_cleanup
+  loop: "{{ range(blockchain_node_last + 1, blockchain_node_cleanup + 1) }}"
+  loop_control:
+    loop_var: node_num
+    label: "{{ '%03d' | format(node_num) }}"
+  when: blockchain_node_last < blockchain_node_cleanup
